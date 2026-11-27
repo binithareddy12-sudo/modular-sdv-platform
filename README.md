@@ -1,167 +1,104 @@
 # Modular SDV-Based Platform for Vehicle Integration
 
+A modular Software-Defined Vehicle (SDV) platform integrating vehicle monitoring, remote control, diagnostics, OTA update simulation, and automatic emergency braking through a standardized vehicle-data infrastructure.
 
-## 1. Project Overview
+## Overview
 
-Modern vehicles are increasingly evolving into Software-Defined Vehicles (SDVs), where software plays a central role in vehicle monitoring, control, diagnostics, and safety. However, integrating different vehicle functionalities into a common and interoperable platform remains an important engineering challenge.
+Modern vehicles are evolving towards Software-Defined Vehicle (SDV) architectures, where software enables vehicle functionality, connectivity, monitoring, and safety management.
 
-This research aims to develop a **Modular Software-Defined Vehicle (SDV) Platform for Vehicle Integration**, providing a unified environment in which multiple vehicle functionalities can communicate, operate, and be tested together.
+This project presents a modular SDV platform that demonstrates the integration of multiple vehicle functionalities within a common software-based environment.
 
-The proposed platform uses selected Eclipse SDV technologies, COVESA Vehicle Signal Specification (VSS), and Eclipse KUKSA Databroker to establish a standardized vehicle-data infrastructure. A Python-based virtual vehicle simulator generates vehicle parameters, while a Streamlit-based dashboard provides monitoring, diagnostics, and remote-control capabilities.
+The platform uses **COVESA Vehicle Signal Specification (VSS)** for standardized vehicle-signal representation and **Eclipse KUKSA Databroker** as the centralized vehicle-data communication layer. A Python-based virtual vehicle simulator generates vehicle parameters, while a Streamlit dashboard provides real-time monitoring, diagnostics, remote control, OTA update simulation, and safety functionality.
 
-The primary focus is to move beyond implementing individual vehicle functionalities independently and demonstrate their practical integration within a common SDV architecture.
+The primary objective is to demonstrate how multiple vehicle applications can share standardized vehicle data and operate together within a unified SDV architecture without requiring physical vehicle hardware.
 
-## 2. Problem Statement
+## Key Features
 
-Existing vehicle functionalities are often developed and tested independently using different software components and communication mechanisms. This makes integration, interoperability, and coordinated testing difficult.
+The platform integrates five major vehicle use cases:
 
-There is a need for a modular Software-Defined Vehicle platform that provides a common vehicle-data infrastructure through which multiple vehicle functionalities can communicate and operate together.
+### 1. Real-Time Vehicle Monitoring
+- Live vehicle speed monitoring.
+- Battery-voltage monitoring.
+- Vehicle operating-mode display.
+- Real-time graphical visualization.
+- Vehicle condition and health indicators.
 
-This project addresses this problem by developing an integrated SDV platform connecting vehicle simulation, standardized vehicle signals, centralized data communication, and application-level functionalities.
+### 2. Remote Vehicle Control
+- Remote central locking and unlocking.
+- Simulated acceleration and braking.
+- Emergency-stop functionality.
+- Dashboard-to-simulator command communication.
 
-## 3. Research Gap
+### 3. Vehicle Diagnostics and Health Monitoring
+- Overspeed detection.
+- Low battery and critical battery detection.
+- Vehicle health classification.
+- Diagnostic alerts and warnings.
+- Fault detection and clearance tracking.
 
-Although existing research extensively explores Software-Defined Vehicle architectures, standardized vehicle communication, service-oriented software design, and individual automotive applications, these areas are frequently addressed independently.
+### 4. Over-the-Air (OTA) Update Simulation
+- Update availability check.
+- Simulated download and verification.
+- Simulated software installation.
+- Update activation.
+- Software version and update-status tracking.
 
-A significant gap remains in the practical integration and coordinated evaluation of multiple vehicle functionalities through a common, standardized vehicle-data infrastructure. There is a need for a modular implementation demonstrating how different vehicle applications can share vehicle data, exchange control information, and operate together within a unified SDV environment.
+### 5. Automatic Emergency Braking (AEB)
+- Simulated obstacle-distance monitoring.
+- Collision-risk assessment.
+- Time-to-collision (TTC) calculation.
+- Stopping-distance and safety-margin calculation.
+- Automatic braking activation.
+- Vehicle stopping simulation.
+- AEB reset and simulation resume.
 
-**This research addresses the identified gap by developing a common modular SDV platform that integrates five vehicle use cases using selected Eclipse SDV technologies, COVESA VSS, and Eclipse KUKSA Databroker.**
+**Note:** OTA update and emergency braking are software simulations. The platform does not flash actual vehicle firmware or control physical vehicle brakes.
 
-## 4. Research Question
+## System Architecture
 
-How can selected Eclipse SDV technologies be integrated to support five vehicle use cases on a common, modular platform?
+The platform follows a modular four-layer architecture.
 
-## 5. Research Objectives
+```text
++------------------------------------------------------+
+|                  APPLICATION LAYER                   |
+|                                                      |
+|             Streamlit Vehicle Dashboard              |
+|                                                      |
+|  Monitoring | Diagnostics | Remote Control | OTA     |
+|                 AEB | Event History                   |
++---------------------------+--------------------------+
+                            |
+                            |
++---------------------------v--------------------------+
+|             VEHICLE DATA & COMMUNICATION             |
+|                                                      |
+|                Eclipse KUKSA Databroker              |
+|                                                      |
+|       Centralized Vehicle Data and Control           |
++---------------------------+--------------------------+
+                            |
+                            |
++---------------------------v--------------------------+
+|              VIRTUAL VEHICLE SIMULATION              |
+|                                                      |
+|                 Python Simulator                     |
+|                                                      |
+|  Speed | Battery | Locking | Scenarios | Commands    |
++---------------------------+--------------------------+
+                            |
+                            |
++---------------------------v--------------------------+
+|                 VEHICLE SIGNAL MODEL                 |
+|                                                      |
+|              COVESA Vehicle Signal Specification    |
+|                                                      |
+|             Standardized Vehicle Signal Paths        |
++------------------------------------------------------+
+```
 
-1. **Design a Unified SDV Platform:** Develop a modular architecture that provides a common foundation for integrating multiple vehicle functionalities.
+## Vehicle Simulation Scenarios
 
-2. **Establish Standardized Vehicle Data Integration:** Utilize COVESA VSS and Eclipse KUKSA Databroker for standardized vehicle-signal representation and centralized, bidirectional data communication.
-
-3. **Integrate Multiple Vehicle Use Cases:** Implement and integrate real-time monitoring, remote lock/unlock, remote diagnostics, OTA update simulation, and AI-assisted emergency braking.
-
-4. **Demonstrate and Evaluate Platform Integration:** Verify the interoperability, functionality, and coordinated operation of all five use cases within the common SDV platform.
-
-## 6. Proposed System Architecture
-
-The proposed architecture consists of four major layers.
-
-### 6.1 Vehicle Signal Model
-
-**Technology: COVESA Vehicle Signal Specification (VSS)**
-
-VSS provides a standardized representation of vehicle signals and enables different applications to access vehicle information through a common data model.
-
-Selected signals include:
-- `Vehicle.Speed`
-- `Vehicle.LowVoltageBattery.CurrentVoltage`
-- `Vehicle.Body.CentralLock.IsLocked`
-- `Vehicle.Simulation.Mode`
-
-Additional signals for diagnostics, OTA status, and braking functionality may be incorporated during further development.
-
-### 6.2 Virtual Vehicle Simulation Layer
-
-**Technology: Python**
-
-A Python-based virtual vehicle simulator replicates basic vehicle behaviour without requiring physical vehicle hardware.
-
-The simulator generates dynamic vehicle parameters and supports six automatic operating scenarios:
-
-- NORMAL
-- STOPPED
-- OVERSPEED
-- LOW_BATTERY
-- OVERSPEED_AND_LOW_BATTERY
-- CRITICAL_BATTERY
-
-It also supports simulated acceleration, braking, emergency stopping, and central locking.
-
-### 6.3 Vehicle Data and Communication Layer
-
-**Technology: Eclipse KUKSA Databroker**
-
-Eclipse KUKSA Databroker acts as the centralized vehicle-data communication layer.
-
-It enables:
-- Publishing vehicle sensor values.
-- Reading current vehicle parameters.
-- Exchanging actuator commands.
-- Sharing vehicle data between the simulator and applications.
-- Integration through standardized VSS signal paths.
-
-### 6.4 Application Layer
-
-**Technologies: Python and Streamlit**
-
-The application layer provides a dashboard for vehicle monitoring and control.
-
-It includes:
-- Real-time vehicle monitoring.
-- Remote vehicle control.
-- Vehicle condition monitoring.
-- Diagnostic alerts.
-- Event logging.
-- Live graphical visualization.
-
-## 7. Five Proposed Vehicle Use Cases
-
-The research focuses on integrating the following five use cases on the common SDV platform.
-
-### Use Case 1: Real-Time Vehicle Monitoring
-
-Provides continuous monitoring of vehicle parameters such as speed, battery voltage, and operating mode through a centralized dashboard.
-
-### Use Case 2: Remote Lock/Unlock
-
-Enables remote control of the vehicle's central locking mechanism through dashboard commands communicated via KUKSA Databroker.
-
-### Use Case 3: Remote Vehicle Diagnostics
-
-Monitors vehicle parameters and identifies abnormal operating conditions, such as overspeed and low battery voltage, to generate diagnostic alerts.
-
-### Use Case 4: Over-the-Air (OTA) Update Simulation
-
-A proposed simulated OTA update workflow to demonstrate how software-update operations can be represented and monitored within the integrated SDV platform.
-
-### Use Case 5: AI-Assisted Emergency Braking
-
-A proposed AI-assisted safety functionality that identifies potentially unsafe vehicle conditions and initiates an emergency braking response through the vehicle-control layer.
-
-## 8. Technologies and Tools Used
-
-| Category | Technology / Tool |
-|---|---|
-| Programming Language | Python |
-| Vehicle Architecture | Software-Defined Vehicle |
-| Vehicle Signal Standard | COVESA VSS |
-| Vehicle Data Broker | Eclipse KUKSA Databroker |
-| Application Framework | Streamlit |
-| Containerization | Docker |
-| Data Handling | JSON, CSV |
-| Development Environment | Visual Studio Code |
-| Operating System | Windows 11 |
-| Version Control | Git and GitHub |
-
-## 9. Current Project Progress
-
-The project has progressed from architectural design to a functional software-based SDV prototype. The following components and functionalities have been implemented and tested.
-
-### 9.1 Vehicle Simulation and Signal Integration
-
-- Developed a Python-based virtual vehicle simulator.
-- Integrated COVESA Vehicle Signal Specification (VSS).
-- Configured Eclipse KUKSA Databroker using Docker.
-- Established communication between the Python simulator and KUKSA Databroker.
-- Implemented real-time publishing and reading of vehicle signals:
-  - `Vehicle.Speed`
-  - `Vehicle.LowVoltageBattery.CurrentVoltage`
-  - `Vehicle.Simulation.Mode`
-  - `Vehicle.Body.CentralLock.IsLocked`
-- Implemented smooth vehicle speed and battery-voltage simulation.
-
-### 9.2 Six Automatic Vehicle Simulation Scenarios
-
-Implemented six automatic vehicle operating scenarios with different speed and battery-voltage ranges.
+The virtual vehicle simulator supports six automatic operating scenarios to demonstrate different vehicle conditions.
 
 | Scenario | Speed Range | Battery Voltage |
 |---|---:|---:|
@@ -172,105 +109,24 @@ Implemented six automatic vehicle operating scenarios with different speed and b
 | OVERSPEED_AND_LOW_BATTERY | 105–125 km/h | 11.2–11.9 V |
 | CRITICAL_BATTERY | 30–70 km/h | 9.5–10.7 V |
 
-Each scenario runs automatically for a configured duration, allowing different vehicle conditions to be demonstrated and tested.
+These scenarios provide a controlled environment for testing vehicle monitoring, diagnostics, and safety responses.
 
-### 9.3 Real-Time Vehicle Monitoring Dashboard
+## Technology Stack
 
-- Developed a Streamlit-based vehicle monitoring dashboard.
-- Implemented live vehicle speed monitoring.
-- Implemented live battery-voltage monitoring.
-- Displayed the current vehicle simulation mode.
-- Added continuously updating speed and battery graphs.
-- Implemented automatic dashboard refresh.
-- Integrated vehicle condition and health monitoring.
-
-### 9.4 Remote Vehicle Control
-
-Implemented dashboard-based remote vehicle commands through a separate JSON command file.
-
-- Remote central locking and unlocking.
-- Simulated remote acceleration.
-- Simulated remote braking.
-- Emergency-stop command.
-- Command communication between the dashboard and virtual vehicle simulator.
-- Gradual speed adjustment for acceleration and braking.
-- Emergency braking simulation to bring vehicle speed to zero.
-
-The command interface uses a timestamped JSON file to communicate commands between the dashboard and simulator without modifying the existing VSS definition.
-
-### 9.5 Vehicle Diagnostics and Health Monitoring
-
-- Implemented scenario-based vehicle condition monitoring.
-- Identified overspeed conditions.
-- Detected low battery and critical battery conditions.
-- Generated diagnostic alerts based on vehicle operating conditions.
-- Monitored vehicle health using simulated speed and battery parameters.
-- Supported fault detection and clearance event recording.
-
-### 9.6 Vehicle Event Logging
-
-Implemented CSV-based event logging to maintain a record of vehicle activities.
-
-The event history includes:
-- Vehicle scenario changes.
-- Vehicle condition changes.
-- Fault detection and clearance.
-- Remote locking and unlocking.
-- Remote acceleration and braking commands.
-- Emergency-stop commands.
-
-### 9.7 System Startup Automation
-
-- Developed a PowerShell startup script (`start_sdv.ps1`).
-- Automated KUKSA Databroker startup.
-- Automated virtual vehicle simulator launch.
-- Automated Streamlit dashboard launch.
-- Configured automatic browser opening for the dashboard.
-
-### 9.8 Remaining Research Work
-
-The following functionalities are planned for the next implementation phase:
-
-1. Develop the OTA update simulation workflow.
-2. Design and implement AI-assisted emergency braking.
-3. Complete the remote diagnostics use case and integrate all five proposed use cases.
-4. Perform systematic functional and interoperability testing.
-5. Record evaluation metrics and document experimental results.
-
-**Current Status:** The foundational SDV architecture, virtual vehicle simulation, standardized signal communication, real-time dashboard, remote vehicle controls, scenario-based diagnostics, event logging, and startup automation have been implemented and tested. OTA simulation and AI-assisted emergency braking remain under development.
-
-## 10. Expected Research Contributions
-
-1. A modular SDV architecture providing a common foundation for multiple vehicle applications.
-2. Standardized vehicle-data representation and centralized communication using VSS and KUKSA Databroker.
-3. Practical integration of five vehicle functionalities within a unified platform.
-4. A software-based environment for demonstrating and evaluating vehicle functionality and interoperability without requiring physical vehicle hardware.
-5. A foundation that can be extended with additional vehicle applications and hardware integrations.
-
-## 11. Evaluation and Testing
-
-The integrated platform will be evaluated using the following parameters:
-
-| Evaluation Area | Parameters |
+| Category | Technology |
 |---|---|
-| Vehicle Monitoring | Accuracy and consistency of vehicle parameter updates |
-| Data Communication | Successful exchange of sensor data and control commands |
-| Remote Control | Correct execution of vehicle-control commands |
-| Diagnostics | Identification of abnormal vehicle conditions |
-| OTA Simulation | Correct execution and monitoring of the update workflow |
-| Emergency Braking | Correct detection and activation of the braking response |
-| System Integration | Interoperability and coordinated operation of all five use cases |
+| Programming Language | Python |
+| Vehicle Architecture | Software-Defined Vehicle |
+| Vehicle Signal Standard | COVESA VSS |
+| Vehicle Data Broker | Eclipse KUKSA Databroker |
+| Dashboard Framework | Streamlit |
+| Containerization | Docker |
+| Data Formats | JSON, CSV |
+| Development Environment | Visual Studio Code |
+| Operating System | Windows 11 |
+| Version Control | Git and GitHub |
 
-## 12. Future Work
-
-- Complete the OTA update simulation module.
-- Develop and integrate AI-assisted emergency braking.
-- Establish integration between all five vehicle use cases.
-- Conduct functional and interoperability testing.
-- Analyze system performance and document experimental results.
-- Explore future integration with physical vehicle hardware.
-
-## 13. Project Repository Structure
+## Project Structure
 
 ```text
 SDV_Project/
@@ -281,8 +137,11 @@ SDV_Project/
 │
 ├── virtual_vehicle.py
 ├── dashboard.py
+├── ota_update.py
+│
 ├── vehicle_commands.json
 ├── vehicle_events.csv
+│
 ├── start_sdv.ps1
 │
 ├── requirements.txt
@@ -290,69 +149,135 @@ SDV_Project/
 └── README.md
 ```
 
-The Python virtual environment (`venv/`) is excluded from version control. Dependencies will be documented in `requirements.txt`.
-
-## 14. Running the Current Prototype
+## Getting Started
 
 ### Prerequisites
 
+- Windows 11 or a compatible operating system.
 - Python 3.13 or compatible Python installation.
 - Docker Desktop.
-- Eclipse KUKSA Databroker configured with the project VSS file.
+- Eclipse KUKSA Databroker.
 - Required Python packages.
 
-### Start KUKSA Databroker
+### 1. Clone the Repository
+
+```bash
+git clone <YOUR_GITHUB_REPOSITORY_URL>
+cd SDV_Project
+```
+
+### 2. Create and Activate a Virtual Environment
 
 ```powershell
+python -m venv venv
+.\venv\Scripts\activate
+```
+
+### 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Start KUKSA Databroker
+
+Ensure Docker Desktop is running, then execute:
+
+```bash
 docker start kuksa-databroker
 ```
 
-### Start Virtual Vehicle Simulator
+The Databroker must be configured with the project's VSS definition and accessible on the configured port.
+
+### 5. Start the Virtual Vehicle Simulator
+
+Open a PowerShell terminal:
 
 ```powershell
-cd SDV_Project
-.\venv\Scripts\python.exe virtual_vehicle.py
+python virtual_vehicle.py
 ```
 
-### Start Dashboard
+### 6. Start the Streamlit Dashboard
 
 Open another PowerShell terminal:
 
 ```powershell
-cd SDV_Project
-.\venv\Scripts\python.exe -m streamlit run dashboard.py
+python -m streamlit run dashboard.py
 ```
 
-Open the dashboard at:
+### 7. Access the Dashboard
+
+Open the following address in your browser:
 
 ```text
 http://localhost:8501
 ```
 
-Alternatively, use the provided `start_sdv.ps1` script to launch the components.
+Alternatively, use the provided `start_sdv.ps1` script to launch the project components.
 
-**Note:** The current prototype is intended for local software-based demonstration. It does not directly control a physical vehicle.
+## Current Implementation Status
 
-## 15. References
+The project has progressed from architectural design to a functional software-based SDV prototype.
 
-1. N. Cardona, E. Coronado, S. Latré, R. Riggio, and J. M. Márquez-Barja, "Software-Defined Vehicular Networking: Opportunities and Challenges," *IEEE Access*, 2020.
-2. Y. Chen, S. Chen, T. Zhang, S. Zhang, and N. Zheng, "Autonomous Vehicle Testing and Validation Platform: Integrated Simulation System with Hardware in the Loop," *IEEE Intelligent Vehicles Symposium (IV)*, 2018.
-3. M. Nascimento et al., "A Systematic Literature Review About the Impact of Artificial Intelligence on Autonomous Vehicle Safety," *IEEE Transactions on Intelligent Transportation Systems*, 2020.
-4. S. Jiang, "Vehicle E/E Architecture and Key Technologies Enabling Software-Defined Vehicle," *SAE Technical Paper 2024-01-2035*, 2024.
-5. Kampmann, "A Dynamic Service-Oriented Software Architecture for the Automotive Domain," RWTH Aachen University, 2023.
-6. [Eclipse KUKSA Databroker Documentation](https://eclipse-kuksa.github.io/kuksa-databroker/)
-7. [COVESA Vehicle Signal Specification](https://github.com/COVESA/vehicle_signal_specification)
+| Component | Status |
+|---|---|
+| Virtual Vehicle Simulation | Implemented |
+| COVESA VSS Integration | Implemented |
+| Eclipse KUKSA Databroker Integration | Implemented |
+| Real-Time Vehicle Monitoring | Implemented |
+| Remote Lock/Unlock | Implemented |
+| Remote Vehicle Control | Implemented |
+| Vehicle Diagnostics | Implemented |
+| Vehicle Health Monitoring | Implemented |
+| OTA Update Simulation | Implemented |
+| Automatic Emergency Braking | Implemented |
+| Event Logging | Implemented |
+| Startup Automation | Implemented |
 
-## 16. Conclusion
+**Current Phase:** System testing, performance evaluation, and research paper preparation.
 
-This research focuses on addressing the practical integration gap in Software-Defined Vehicles by developing a unified and modular platform for multiple vehicle functionalities.
+## Research Focus
 
-By combining standardized vehicle signals, centralized vehicle-data communication, virtual vehicle simulation, and application-level functionalities, the proposed platform aims to demonstrate how different vehicle applications can operate and be evaluated together within a common SDV architecture.
+The project investigates the practical integration of multiple vehicle functionalities through a common standardized vehicle-data infrastructure.
 
-The central research contribution is not merely the development of individual vehicle features, but their practical integration, communication, and coordinated evaluation on a common platform.
+Its primary focus areas are:
+
+- Modular integration of vehicle applications.
+- Standardized vehicle-signal communication.
+- Centralized vehicle-data management.
+- Coordinated operation of monitoring, diagnostics, control, and safety functions.
+- Scenario-driven testing and evaluation of an integrated SDV platform.
+
+The research contribution focuses on system-level integration and evaluation rather than treating each vehicle functionality as an independent application.
+
+## Future Scope
+
+- Quantitative performance and reliability evaluation.
+- Extended vehicle diagnostics and fault scenarios.
+- Integration with physical vehicle hardware.
+- Additional SDV applications and communication interfaces.
+- Further optimization of the modular architecture.
+
+## Limitations
+
+- The vehicle is represented through a software-based simulator.
+- OTA operations are simulated and do not install actual firmware.
+- Obstacle detection and braking are simulated and are not connected to physical sensors or actuators.
+- The current implementation is intended for research, testing, and demonstration purposes.
+
+## References and Documentation
+
+- [Eclipse KUKSA Databroker](https://eclipse-kuksa.github.io/kuksa-databroker/)
+- [COVESA Vehicle Signal Specification](https://covesa.github.io/vehicle_signal_specification/)
+- [Eclipse SDV](https://eclipse.dev/sdv/)
+
+## Author
+
+**Gangi Reddy Binitha**
+
+Electronics and Communication Engineering  
+KLE Technological University, Hubballi
 
 ---
 
-**Project:** Modular SDV-Based Platform for Vehicle Integration  
-**Researcher:** Gangi Reddy Binitha  
-**Institution:** KLE Technological University, Hubballi
+*Developed as a research-oriented project on modular Software-Defined Vehicle integration.*
